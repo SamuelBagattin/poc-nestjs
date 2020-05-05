@@ -1,7 +1,7 @@
 pipeline {
   agent {
-    docker {
-      image 'node:14.1.0-alpine3.10'
+    dockerfile {
+      filename 'Dockerfile'
     }
 
   }
