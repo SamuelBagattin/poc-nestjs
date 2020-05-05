@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'sudo npm cache clean --force'
+        sh 'npm cache clean --force'
         sh 'npm -g install yarn'
         sh 'yarn install'
         sh 'yarn run build'
