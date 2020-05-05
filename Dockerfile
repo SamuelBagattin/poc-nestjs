@@ -1,6 +1,6 @@
 FROM ubuntu
 
-RUN apt-get install curl
+RUN apt install curl
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 RUN nvm install node
 RUN npm -g install yarn
