@@ -1,9 +1,8 @@
 pipeline {
   agent {
-    dockerfile {
-      filename 'Dockerfile'
+     node {
+        label 'ec2'
     }
-
   }
   stages {
     stage('Build') {
