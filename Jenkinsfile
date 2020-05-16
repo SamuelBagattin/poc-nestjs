@@ -16,10 +16,10 @@ pipeline {
        sh 'zip -r dist dist/' 
       }
     }
+  }
     post {
         always {
             archiveArtifacts artifacts: 'dist.zip', fingerprint: true
         }
     }
-  }
 }
