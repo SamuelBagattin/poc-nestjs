@@ -13,7 +13,7 @@ pipeline {
     }
     stage('Package') {
       steps {
-       sh 'zip -r dist dist/ 
+       sh 'zip -r dist dist/' 
       }
     }
     post {
