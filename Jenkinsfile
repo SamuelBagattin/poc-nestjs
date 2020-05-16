@@ -11,6 +11,15 @@ pipeline {
         sh 'yarn run build'
       }
     }
-
+    stage('Package') {
+      steps {
+       sh 'zip -r dist dist/ 
+      }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: 'dist.zip', fingerprint: true
+        }
+    }
   }
 }
