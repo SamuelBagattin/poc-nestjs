@@ -26,6 +26,7 @@ pipeline {
         sh 'mv ./dist/* ./output/build/'
         sh 'rimraf node_modules'
         sh 'yarn --production'
+        sh 'mkdir --parents ./output/build
         sh 'mv ./node_modules ./output/build/node_modules'
         sh 'zip -r -j ./output/artifacts/dist ./output/build/*'
       }
@@ -33,7 +34,7 @@ pipeline {
   }
     post {
         always {
-            archiveArtifacts artifacts: 'dist.zip', fingerprint: true
+            archiveArtifacts artifacts: './output/artifacts/dist.zip', fingerprint: true
           step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/cobertura-coverage.xml'])
         }
     }
