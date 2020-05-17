@@ -15,11 +15,6 @@ pipeline {
        sh 'yarn run test:cov'
       }
     }
-      post {
-          always {
-              step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/cobertura-coverage.xml'])
-          }
-      }
     stage('E2E test'){
       steps {
        sh 'yarn run test:e2e'
@@ -34,9 +29,9 @@ pipeline {
     stage('Build') {
       steps {
         sh 'yarn run build'
-          sh 'mv ./dist/* ./output/build/'
-          sh 'mv ./node_modules ./output/build/node_modules'
-          sh 'zip -r -j ./output/artifacts/dist ./output/build/*'
+        sh 'mv ./dist/* ./output/build/'
+        sh 'mv ./node_modules ./output/build/node_modules'
+        sh 'zip -r -j ./output/artifacts/dist ./output/build/*'
       }
     }
   }
@@ -44,5 +39,8 @@ pipeline {
         always {
             archiveArtifacts artifacts: 'dist.zip', fingerprint: true
         }
+      always {
+              step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/cobertura-coverage.xml'])
+          }
     }
 }
