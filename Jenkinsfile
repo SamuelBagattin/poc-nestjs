@@ -26,7 +26,7 @@ pipeline {
         sh 'mv ./dist/* ./output/build/'
         sh 'rimraf node_modules'
         sh 'yarn --production'
-        sh 'mkdir --parents ./output/build
+        sh 'mkdir --parents ./output/build'
         sh 'mv ./node_modules ./output/build/node_modules'
         sh 'zip -r -j ./output/artifacts/dist ./output/build/*'
       }
