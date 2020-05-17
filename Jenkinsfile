@@ -5,15 +5,38 @@ pipeline {
     }
   }
   stages {
-    stage('Build') {
+    stage('Install dependencies'){
       steps {
-        sh 'yarn'
-        sh 'yarn run build'
+       sh 'yarn'
       }
     }
-    stage('Package') {
+    stage('Unit test'){
       steps {
-       sh 'zip -r dist dist/* node_modules' 
+       sh 'yarn run test:cov'
+      }
+    }
+      post {
+          always {
+              step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/cobertura-coverage.xml'])
+          }
+      }
+    stage('E2E test'){
+      steps {
+       sh 'yarn run test:e2e'
+      }
+    }
+      stage('Install prod dependencies'){
+          steps {
+              sh 'rimraf node_modules'
+              sh 'yarn --production'
+          }
+      }
+    stage('Build') {
+      steps {
+        sh 'yarn run build'
+          sh 'mv ./dist/* ./output/build/'
+          sh 'mv ./node_modules ./output/build/node_modules'
+          sh 'zip -r -j ./output/artifacts/dist ./output/build/*'
       }
     }
   }
