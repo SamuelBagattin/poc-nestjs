@@ -20,16 +20,12 @@ pipeline {
        sh 'yarn run test:e2e'
       }
     }
-      stage('Install prod dependencies'){
-          steps {
-              sh 'rimraf node_modules'
-              sh 'yarn --production'
-          }
-      }
     stage('Build') {
       steps {
         sh 'yarn run build'
         sh 'mv ./dist/* ./output/build/'
+        sh 'rimraf node_modules'
+        sh 'yarn --production'
         sh 'mv ./node_modules ./output/build/node_modules'
         sh 'zip -r -j ./output/artifacts/dist ./output/build/*'
       }
