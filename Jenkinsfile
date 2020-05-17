@@ -38,9 +38,7 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: 'dist.zip', fingerprint: true
+          step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/cobertura-coverage.xml'])
         }
-      always {
-              step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/cobertura-coverage.xml'])
-          }
     }
 }
