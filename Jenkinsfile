@@ -2,7 +2,7 @@ pipeline {
   agent {
      node {
         label 'ec2 '
-       customWorkspace "~/workspace/${JOB_NAME}/${BUILD_NUMBER}"
+       customWorkspace "${JOB_NAME}/${BUILD_NUMBER}"
     }
   }
   stages {
