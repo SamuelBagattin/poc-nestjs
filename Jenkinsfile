@@ -39,13 +39,13 @@ pipeline {
         sh 'rimraf node_modules'
         sh 'yarn --production'
         sh 'mv ./node_modules ./output/build/node_modules'
-        sh 'mkdir -p ./output/artifacts && zip -r ./output/artifacts/poc.nestjs.${semver} ./output/build/'
+        sh 'mkdir -p ./output/artifacts && zip -r ./output/artifacts/poc.nestjs."${semver}" ./output/build/'
       }
     }
   }
     post {
         always {
-            archiveArtifacts artifacts: 'output/artifacts/poc.nestjs.${semver}}.zip', fingerprint: true
+            archiveArtifacts artifacts: 'output/artifacts/poc.nestjs."${semver}".zip', fingerprint: true
           step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/cobertura-coverage.xml'])
         }
     }
