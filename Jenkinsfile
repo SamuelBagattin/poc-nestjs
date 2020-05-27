@@ -1,3 +1,5 @@
+semver = 'undefined'
+
 pipeline {
   agent {
      node {
@@ -6,6 +8,14 @@ pipeline {
     }
   }
   stages {
+    stage('SemVer'){
+      steps {
+        script {
+         semver = sh(script: 'dotnet gitversion -showvariable SemVer', returnStdout: true).trim()
+        }
+         echo "${semver}"
+      }
+    }
     stage('Install dependencies'){
       steps {
        sh 'yarn'
@@ -29,13 +39,13 @@ pipeline {
         sh 'rimraf node_modules'
         sh 'yarn --production'
         sh 'mv ./node_modules ./output/build/node_modules'
-        sh 'mkdir -p ./output/artifacts && zip -r ./output/artifacts/poc-nestjs_${BUILD_NUMBER} ./output/build/*'
+        sh 'mkdir -p ./output/artifacts && zip -r ./output/artifacts/poc.nestjs.${semver} ./output/build/'
       }
     }
   }
     post {
         always {
-            archiveArtifacts artifacts: 'output/artifacts/poc-nestjs_${BUILD_NUMBER}.zip', fingerprint: true
+            archiveArtifacts artifacts: 'output/artifacts/poc.nestjs.${semver}}.zip', fingerprint: true
           step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/cobertura-coverage.xml'])
         }
     }
