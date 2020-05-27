@@ -35,7 +35,7 @@ pipeline {
   }
     post {
         always {
-            archiveArtifacts artifacts: './output/artifacts/poc_nestjs_${BUILD_NUMBER}.zip', fingerprint: true
+            archiveArtifacts artifacts: './output/artifacts/poc-nestjs_${BUILD_NUMBER}.zip', fingerprint: true
           step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/cobertura-coverage.xml'])
         }
     }
