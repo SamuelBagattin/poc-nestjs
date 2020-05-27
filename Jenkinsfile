@@ -29,7 +29,7 @@ pipeline {
         sh 'rimraf node_modules'
         sh 'yarn --production'
         sh 'mv ./node_modules ./output/build/node_modules'
-        sh 'zip -r ./output/artifacts/dist ./output/build/*'
+        sh 'zip -r ./output/artifacts/"${JOB_NAME}_${BUILD_NUMBER}" ./output/build/*'
       }
     }
   }
