@@ -1,0 +1,84 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Fetch all history for all tags and branches
+      run: git fetch --prune --unshallow
+    - name: Use GitVersion
+      id: gitversion # step id used as reference for output values
+      uses: gittools/actions/gitversion/execute@v0.9.2
+    - run: |
+        echo "Major: ${{ steps.gitversion.outputs.major }}"
+        echo "Minor: ${{ steps.gitversion.outputs.minor }}"
+        echo "Patch: ${{ steps.gitversion.outputs.patch }}"
+        echo "PreReleaseTag: ${{ steps.gitversion.outputs.preReleaseTag }}"
+        echo "PreReleaseTagWithDash: ${{ steps.gitversion.outputs.preReleaseTagWithDash }}"
+        echo "PreReleaseLabel: ${{ steps.gitversion.outputs.preReleaseLabel }}"
+        echo "PreReleaseNumber: ${{ steps.gitversion.outputs.preReleaseNumber }}"
+        echo "WeightedPreReleaseNumber: ${{ steps.gitversion.outputs.weightedPreReleaseNumber }}"
+        echo "BuildMetaData: ${{ steps.gitversion.outputs.buildMetaData }}"
+        echo "BuildMetaDataPadded: ${{ steps.gitversion.outputs.buildMetaDataPadded }}"
+        echo "FullBuildMetaData: ${{ steps.gitversion.outputs.fullBuildMetaData }}"
+        echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
+        echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
+        echo "LegacySemVer: ${{ steps.gitversion.outputs.legacySemVer }}"
+        echo "LegacySemVerPadded: ${{ steps.gitversion.outputs.legacySemVerPadded }}"
+        echo "AssemblySemVer: ${{ steps.gitversion.outputs.assemblySemVer }}"
+        echo "AssemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}"
+        echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
+        echo "InformationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}"
+        echo "BranchName: ${{ steps.gitversion.outputs.branchName }}"
+        echo "Sha: ${{ steps.gitversion.outputs.sha }}"
+        echo "ShortSha: ${{ steps.gitversion.outputs.shortSha }}"
+        echo "NuGetVersionV2: ${{ steps.gitversion.outputs.nuGetVersionV2 }}"
+        echo "NuGetVersion: ${{ steps.gitversion.outputs.nuGetVersion }}"
+        echo "NuGetPreReleaseTagV2: ${{ steps.gitversion.outputs.nuGetPreReleaseTagV2 }}"
+        echo "NuGetPreReleaseTag: ${{ steps.gitversion.outputs.nuGetPreReleaseTag }}"
+        echo "VersionSourceSha: ${{ steps.gitversion.outputs.versionSourceSha }}"
+        echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.commitsSinceVersionSource }}"
+        echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
+        echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.2
+      with:
+          versionSpec: '5.2.x'
+    - run: yarn --frozen-lockfile
+      name: install dependencies
+    - run: yarn test:cov
+      name: Test
+    - run: yarn run test:e2e
+      name: E2E
+    - run: mkdir -p ./output/build && mkdir -p ./output/artifacts
+      name: Create output directories
+    - run: yarn run build && mv ./dist/* ./output/build/
+      name: Build dist
+    - run: rimraf node_modules && yarn --production && mv ./node_modules ./output/build/node_modules
+      name: Build node modules
+    - run: zip -r ./output/artifacts/poc.nestjs.${{ steps.gitversion.outputs.semVer }} ./output/build/
+      name: Package artifact
+    - uses: actions/upload-artifact@v2
+      with:
+        name: poc.nestjs.${{ steps.gitversion.outputs.semVer }}
+        path: ./output/build/ # or path/to/artifact
