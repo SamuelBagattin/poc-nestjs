@@ -64,8 +64,11 @@ jobs:
         echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.commitsSinceVersionSource }}"
         echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
         echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
+      name: Versioning
     - run: yarn --frozen-lockfile
       name: install dependencies
+    - run: yarn global add rimraf
+      name: Install global tools
     - run: yarn test:cov
       name: Test
     - run: yarn run test:e2e
