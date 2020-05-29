@@ -81,7 +81,7 @@ jobs:
 #      name: E2E
     - run: mkdir -p ./output/build && mkdir -p ./output/artifacts
       name: Create output directories
-    - run: yarn run build && mv ./dist/* ./output/build/
+    - run: yarn run build && mv ./dist/* ./output/build/ && cp ./ormconfig.json ./output/build/
       name: Build dist
     - run: rimraf node_modules && yarn --production && mv ./node_modules ./output/build/node_modules
       name: Build node modules
