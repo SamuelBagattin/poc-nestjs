@@ -69,6 +69,12 @@ jobs:
       name: install dependencies
     - run: npm i --global rimraf
       name: Install global tools
+    - name: Install Octopus CLI
+      run: |
+        sudo apt update && sudo apt install --no-install-recommends gnupg curl ca-certificates apt-transport-https && \
+        curl -sSfL https://apt.octopus.com/public.key | sudo apt-key add - && \
+        sudo sh -c "echo deb https://apt.octopus.com/ stable main > /etc/apt/sources.list.d/octopus.com.list" && \
+        sudo apt update && sudo apt install octopuscli
     - run: yarn test:cov
       name: Test
     - run: yarn run test:e2e
@@ -79,9 +85,13 @@ jobs:
       name: Build dist
     - run: rimraf node_modules && yarn --production && mv ./node_modules ./output/build/node_modules
       name: Build node modules
-    - run: zip -r ./output/artifacts/poc.nestjs.${{ steps.gitversion.outputs.semVer }} ./output/build/
-      name: Package artifact
+    - run: octo pack --id="poc.nestjs" --format="Zip" --version="${{ steps.gitversion.outputs.semVer }}" --basePath="./output/build" --outFolder="./output/artifacts"
+      name: Octo pack
+ #   - run: zip -r ./output/artifacts/poc.nestjs.${{ steps.gitversion.outputs.semVer }} ./output/build/
+  #    name: Package artifact
+    - name: Push poc.nestjs to Octopus
+      run: octo push --package="./output/artifacts/poc.nestjs.${{ steps.gitversion.outputs.semVer }}" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}"
     - uses: actions/upload-artifact@v2
       with:
         name: poc.nestjs.${{ steps.gitversion.outputs.semVer }}
-        path: ./output/build/ # or path/to/artifact
+        path: ./output/artifacts/poc.nestjs.${{ steps.gitversion.outputs.semVer }} # or path/to/artifact
