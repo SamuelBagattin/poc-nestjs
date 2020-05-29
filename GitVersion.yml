@@ -9,3 +9,6 @@ branches:
   release:
     tag: ''
     increment: Patch
+  pull-request:
+    tag: beta
+
