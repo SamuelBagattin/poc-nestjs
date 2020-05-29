@@ -67,7 +67,7 @@ jobs:
       name: Versioning
     - run: yarn --frozen-lockfile
       name: install dependencies
-    - run: yarn global add rimraf
+    - run: npm i --global rimraf
       name: Install global tools
     - run: yarn test:cov
       name: Test
